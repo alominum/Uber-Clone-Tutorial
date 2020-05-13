@@ -20,7 +20,7 @@ extension UIColor {
 
 extension UIView {
     
-    func inputContainerView(image: UIImage, textField: UITextField) -> UIView {
+    func inputContainerView(image: UIImage, textField: UITextField? = nil, segmentedControll : UISegmentedControl? = nil) -> UIView {
         let view = UIView()
         
         // add image view
@@ -28,13 +28,25 @@ extension UIView {
         imageView.image = image
         imageView.alpha = 0.87
         view.addSubview(imageView)
-        imageView.centerY(inView: view)
-        imageView.anchor(left: view.leftAnchor, paddingLeft: 8, width: 24,height: 24)
+
         
-        // Add email textField to this view
-        view.addSubview(textField)
-        textField.anchor(left: imageView.rightAnchor,bottom: view.bottomAnchor,right: view.rightAnchor,paddingLeft: 8,paddingBottom: 8,paddingRight: 8)
-        textField.centerY(inView: view)
+        // Add textField to this view
+        if let textField = textField {
+            imageView.centerY(inView: view)
+            imageView.anchor(left: view.leftAnchor, paddingLeft: 8, width: 24,height: 24)
+            
+            view.addSubview(textField)
+            textField.anchor(left: imageView.rightAnchor,right: view.rightAnchor,paddingLeft: 8,paddingRight: 8)
+            textField.centerY(inView: view)
+        }
+        // Add segmented conroll to this view
+        if let segmentedControll = segmentedControll {
+            imageView.anchor(top: view.topAnchor,left: view.leftAnchor,paddingTop: 8,paddingLeft: 8,width: 24,height: 24)
+            view.addSubview(segmentedControll)
+            segmentedControll.anchor(top: imageView.bottomAnchor, left: view.leftAnchor,right: view.rightAnchor,paddingTop: 8, paddingLeft: 8,paddingRight: 8)
+//            segmentedControll.centerY(inView: view)
+
+        }
         
         // Add seperator view
         let separatorView = UIView()
@@ -61,7 +73,7 @@ extension UIView {
         if let top = top {
             topAnchor.constraint(equalTo: top, constant: paddingTop).isActive = true
         }
-
+        
         if let left = left {
             leftAnchor.constraint(equalTo: left, constant: paddingLeft).isActive = true
         }

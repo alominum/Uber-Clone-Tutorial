@@ -20,30 +20,28 @@ class LoginVC: UIViewController {
     }()
     
     private let emailTextField : UITextField = {
-        let view = UITextField().textField(withPlaceHolder: "Email", isSecuredTextEntry: false)
-        return view
+        return UITextField().textField(withPlaceHolder: "Email", isSecuredTextEntry: false)
     }()
     
     private let passwordTextField : UITextField = {
-        let view = UITextField().textField(withPlaceHolder: "Password", isSecuredTextEntry: true)
-        return view
+        return UITextField().textField(withPlaceHolder: "Password", isSecuredTextEntry: true)
     }()
     
     private lazy var emailContainerView : UIView = {
-        return UIView().inputContainerView(image: #imageLiteral(resourceName: "ic_mail_outline_white_2x"), textField: emailTextField)
+        let view = UIView().inputContainerView(image: #imageLiteral(resourceName: "ic_mail_outline_white_2x"), textField: emailTextField)
+        view.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        return view
     }()
     
     private lazy var passwordContainerView : UIView = {
-        return UIView().inputContainerView(image: #imageLiteral(resourceName: "ic_lock_outline_white_2x"), textField: passwordTextField)
+        let view = UIView().inputContainerView(image: #imageLiteral(resourceName: "ic_lock_outline_white_2x"), textField: passwordTextField)
+        view.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        return view
     }()
     
-    let loginButton: UIButton = {
-        let button = UIButton(type: .system)
+    let loginButton: AuthButton = {
+        let button = AuthButton(type: .system)
         button.setTitle("Log in", for: .normal)
-        button.setTitleColor(UIColor(white: 1, alpha: 0.5), for: .normal)
-        button.backgroundColor = .mainBlueTint
-        button.layer.cornerRadius = 5
-        button.heightAnchor.constraint(equalToConstant: 50).isActive = true
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 20)
         button.addTarget(self, action: #selector(handleLoginButton), for: .touchUpInside)
         return button
@@ -69,6 +67,9 @@ class LoginVC: UIViewController {
         
     }
     
+//    override func viewDidAppear(_ animated: Bool) {
+//        configureNaveBar()
+//    }
 
     
     // MARK: - Selectors
@@ -83,29 +84,29 @@ class LoginVC: UIViewController {
     
     // MARK: - Helper functions
     func configureUI(){
-        // Do any additional setup after loading the view.
-        view.backgroundColor = .backgroundColor
-        
-        // Add subviews
-        view.addSubview(titleLabel)
-        
-        
-        // Add constraints
-        titleLabel.anchor(top: view.safeAreaLayoutGuide.topAnchor)
-        titleLabel.centerX(inView: view)
-        
-        // Deine and add Stack
-        let stack = UIStackView(arrangedSubviews: [emailContainerView,passwordContainerView,loginButton])
-        stack.axis = .vertical
-        stack.distribution = .fillEqually
-        stack.spacing = 16
-        view.addSubview(stack)
-        stack.anchor(top: titleLabel.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 40, paddingLeft: 16, paddingRight: 16)
-        
-        // add signup button
-        view.addSubview(dontHaveAccountButton)
-        dontHaveAccountButton.centerX(inView: view)
-        dontHaveAccountButton.anchor(left: view.leftAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, right: view.rightAnchor, height: 32)
+            // Do any additional setup after loading the view.
+            view.backgroundColor = .backgroundColor
+            
+            // Add subviews
+            view.addSubview(titleLabel)
+            
+            
+            // Add constraints
+            titleLabel.anchor(top: view.safeAreaLayoutGuide.topAnchor)
+            titleLabel.centerX(inView: view)
+            
+            // Deine and add Stack
+            let stack = UIStackView(arrangedSubviews: [emailContainerView,passwordContainerView,loginButton])
+            stack.axis = .vertical
+            stack.distribution = .fillEqually
+            stack.spacing = 16
+            view.addSubview(stack)
+            stack.anchor(top: titleLabel.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 40, paddingLeft: 16, paddingRight: 16)
+            
+            // add signup button
+            view.addSubview(dontHaveAccountButton)
+            dontHaveAccountButton.centerX(inView: view)
+            dontHaveAccountButton.anchor(left: view.leftAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, right: view.rightAnchor, height: 32)
     }
     
     func configureNaveBar(){
