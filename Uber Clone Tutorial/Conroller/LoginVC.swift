@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 class LoginVC: UIViewController {
     
@@ -75,11 +76,40 @@ class LoginVC: UIViewController {
     // MARK: - Selectors
     @objc func handleShowSignUp(){
         let signupVC = SignupVC()
-        navigationController?.pushViewController(signupVC, animated: true)
+        
+        self.present(signupVC, animated: true, completion: nil)
+       // self.dismiss(animated: true, completion: nil)
+        //navigationController?.pushViewController(signupVC, animated: true)
     }
     
     @objc func handleLoginButton(){
-        print("Login")
+        guard let email = emailTextField.text else { return }
+        guard let password = passwordTextField.text else { return }
+        
+        if !UITextField().isAnEmailAddress(email) {
+            print ("DEBUG: Email address is not valid.")
+            return
+        }
+        
+        Auth.auth().signIn(withEmail: email, password: password) { (res, err) in
+            if let err = err {
+                print("DEBUG: Error while logining with email and password: \(err.localizedDescription)")
+                return
+            }
+            
+            print("DEBUG: User JUST logged int: ",Auth.auth().currentUser?.email ?? "")
+            
+            
+            guard let vc = UIApplication.shared.windows.first!.rootViewController?.children.first as? MainVC else { return }
+            
+            vc.configureUI()
+            
+            // Goes to root VC
+            self.dismiss(animated: true, completion: nil)
+            
+        }
+        
+        
     }
     
     // MARK: - Helper functions

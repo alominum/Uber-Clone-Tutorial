@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 class SignupVC: UIViewController {
     
@@ -57,7 +58,7 @@ class SignupVC: UIViewController {
         return view
     }()
     
-    private let segmentedConroll : UISegmentedControl = {
+    private let accountTypeSC : UISegmentedControl = {
         let sc = UISegmentedControl(items: ["Rider","Driver"])
         sc.backgroundColor = .backgroundColor
         sc.tintColor = UIColor(white: 1, alpha: 0.87)
@@ -65,8 +66,8 @@ class SignupVC: UIViewController {
         return sc
     }()
 
-    private lazy var accountTypeSC : UIView = {
-        let view = UIView().inputContainerView(image: #imageLiteral(resourceName: "ic_account_box_white_2x"), segmentedControll: segmentedConroll)
+    private lazy var accountTypeContainerView : UIView = {
+        let view = UIView().inputContainerView(image: #imageLiteral(resourceName: "ic_account_box_white_2x"), segmentedControll: accountTypeSC)
         view.heightAnchor.constraint(equalToConstant: 85).isActive = true
         return view
     }()
@@ -75,7 +76,7 @@ class SignupVC: UIViewController {
         let button = AuthButton(type: .system)
         button.setTitle("Signup", for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 20)
-        //            button.addTarget(self, action: #selector(handleLoginButton), for: .touchUpInside)
+        button.addTarget(self, action: #selector(handleSignupButton), for: .touchUpInside)
         return button
     }()
     
@@ -109,6 +110,48 @@ class SignupVC: UIViewController {
         navigationController?.popViewController(animated: true)
     }
     
+    @objc func handleSignupButton(){
+        guard let email = emailTextField.text else { return }
+        guard let password = passwordTextField.text else { return }
+        guard let fullName = fullNameTextField.text else { return }
+        let accountType = accountTypeSC.selectedSegmentIndex
+        
+        Auth.auth().createUser(withEmail: email, password: password) { (result, err) in
+            if let err = err {
+                print("DEBUG: Error happend when registering a new user: \(err.localizedDescription)")
+                return
+            }
+            
+            guard let uid = result?.user.uid else { return }
+            
+            let values = ["email" : email,
+                          "fullname" : fullName,
+                          "accounttype" : accountType] as [String : Any]
+            Database.database().reference().child("users").child(uid).updateChildValues(values) { (error, ref) in
+                if let err = err {
+                    print("DEBUG: Error registerig user data in users database: \(err.localizedDescription)")
+                    return
+                }
+                
+                print("DEBUG: User registered and data has been saved.")
+                
+                
+                // Configure UI in the mainVC
+                guard let vc = UIApplication.shared.windows.first?.rootViewController?.children.first as? MainVC else { return }
+                vc.configureUI()
+                
+                // Goes to root VC
+                self.view.window?.rootViewController?.dismiss(animated: true, completion: nil)
+
+                
+            }
+            
+            
+            
+            
+        }
+    }
+    
     // MARK: - Helper functions
     
     func configureUI(){
@@ -124,12 +167,13 @@ class SignupVC: UIViewController {
         titleLabel.centerX(inView: view)
         
         // Deine and add Stack
-        let stack = UIStackView(arrangedSubviews: [emailContainerView,fullnameContainerView,passwordContainerView,accountTypeSC,signupButton])
+        let stack = UIStackView(arrangedSubviews: [emailContainerView,fullnameContainerView,passwordContainerView,accountTypeContainerView,signupButton])
 //        let stack = UIStackView(arrangedSubviews: [emailContainerView])
         stack.axis = .vertical
         stack.distribution = .fillProportionally
         stack.spacing = 16
         view.addSubview(stack)
+        
         stack.anchor(top: titleLabel.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 40, paddingLeft: 16, paddingRight: 16)
         
         // add go to login button

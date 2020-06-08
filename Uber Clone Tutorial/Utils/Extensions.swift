@@ -114,8 +114,28 @@ extension UITextField {
         tf.font = UIFont.systemFont(ofSize: 16)
         tf.textColor = .white
         tf.keyboardAppearance = .dark
-        tf.isSecureTextEntry = isSecureTextEntry
+        tf.isSecureTextEntry = isSecuredTextEntry
+        tf.autocapitalizationType = .none
+        tf.autocorrectionType = .no
         tf.attributedPlaceholder = NSAttributedString(string: placeHolder, attributes: [NSAttributedString.Key.foregroundColor : UIColor.lightGray])
         return tf
     }
+    
+    func isAnEmailAddress(_ email: String) -> Bool {
+        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+        
+        let emailTest = NSPredicate(format:"SELF MATCHES[c] %@", emailRegEx)
+        return emailTest.evaluate(with: email)
+    }
+    
+}
+
+
+extension UIApplication {
+
+    /// The app's key window taking into consideration apps that support multiple scenes.
+    var keyWindowInConnectedScenes: UIWindow? {
+        return windows.first(where: { $0.isKeyWindow })
+    }
+
 }
