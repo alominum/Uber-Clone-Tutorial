@@ -95,14 +95,23 @@ extension UIView {
         }
     }
     
-    func centerX(inView view: UIView, padding: CGFloat = 0){
+    func centerX(inView view: UIView, paddingX: CGFloat = 0){
         translatesAutoresizingMaskIntoConstraints = false
-        centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: padding).isActive = true
+        centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: paddingX).isActive = true
     }
     
-    func centerY(inView view: UIView, padding: CGFloat = 0){
+    func centerY(inView view: UIView, leftAnchor: NSLayoutXAxisAnchor? = nil, paddingLeft: CGFloat = 0 ,paddingY: CGFloat = 0){
         translatesAutoresizingMaskIntoConstraints = false
-        centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: padding).isActive = true
+        centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: paddingY).isActive = true
+        if let left = leftAnchor {
+            anchor(left: left , paddingLeft: paddingLeft )
+        }
+    }
+    
+    func setDimensions(width: CGFloat, height: CGFloat) {
+        translatesAutoresizingMaskIntoConstraints = false
+        heightAnchor.constraint(equalToConstant: height).isActive = true
+        widthAnchor.constraint(equalToConstant: width).isActive = true
     }
 }
 

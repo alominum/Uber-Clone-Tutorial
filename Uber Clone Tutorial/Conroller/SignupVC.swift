@@ -106,8 +106,7 @@ class SignupVC: UIViewController {
     // MARK: - Selectors
     
     @objc func handleShowLogin(){
-        
-        navigationController?.popViewController(animated: true)
+        dismiss(animated: true, completion: nil)
     }
     
     @objc func handleSignupButton(){
