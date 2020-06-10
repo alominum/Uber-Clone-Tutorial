@@ -8,6 +8,8 @@
 
 import UIKit
 
+//MARK: - UIColor
+
 extension UIColor {
     func rgb(red: CGFloat,green: CGFloat,blue: CGFloat) -> UIColor {
         return UIColor.init(red: red/255, green: green/255, blue: blue/255, alpha: 1.0)
@@ -17,6 +19,8 @@ extension UIColor {
     static let mainBlueTint = UIColor().rgb(red: 17, green: 154, blue: 237)
     
 }
+
+//MARK: - UIView
 
 extension UIView {
     
@@ -113,8 +117,16 @@ extension UIView {
         heightAnchor.constraint(equalToConstant: height).isActive = true
         widthAnchor.constraint(equalToConstant: width).isActive = true
     }
+    
+    func addShadow(){
+        layer.shadowColor = UIColor.black.cgColor
+        layer.shadowOpacity = 0.55
+        layer.shadowOffset = CGSize(width: 1, height:1)
+        layer.masksToBounds = false
+    }
 }
 
+//MARK: - TextField
 
 extension UITextField {
     func textField(withPlaceHolder placeHolder: String, isSecuredTextEntry: Bool) -> UITextField {
@@ -139,6 +151,7 @@ extension UITextField {
     
 }
 
+//MARK: - UIApplication
 
 extension UIApplication {
 

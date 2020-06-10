@@ -10,21 +10,23 @@ import UIKit
 import Firebase
 import MapKit
 
+private let reuseIdentifier = "LocationCell"
+
 class MainVC: UIViewController {
+
     
     
     
     // MARK: - Properties
     
-    private let mapView : MKMapView = {
-        let map = MKMapView()
-        map.accessibilityIdentifier = "map"
-        return map
-    }()
-    
-    private let inputActivationView = LocationInputActivationView()
+    private let mapView = MKMapView()
     private let locationManager = CLLocationManager()
     
+    private let inputActivationView = LocationInputActivationView()
+    private let locationInputView = LocationInputView()
+    private let tableView = UITableView()
+    
+    private final let locationInputViewHeight : CGFloat = 200
     // MARK: -  Lifecycle
     
     override func viewDidLoad() {
@@ -67,7 +69,7 @@ class MainVC: UIViewController {
     
     @objc func signOut() {
         do {
-            view.backgroundColor = .black
+
             try Auth.auth().signOut()
             print("DEBUG: User signed out.")
             
@@ -83,21 +85,28 @@ class MainVC: UIViewController {
     func configureUI(){
         print("DEBUG: Configuring MainVC UI.")
         configureBlackView(status: false)
+
         configureMapView()
+        
+        configureInputActiveView()
+        configureTableView()
+    }
+    
+    
+    func configureInputActiveView(){
         
         view.addSubview(inputActivationView)
         inputActivationView.centerX(inView: view)
         inputActivationView.setDimensions(width: view.frame.width - 32, height: 50)
         inputActivationView.anchor(top: view.safeAreaLayoutGuide.topAnchor, paddingTop: 20)
+        inputActivationView.delegate = self
         inputActivationView.alpha = 0
         UIView.animate(withDuration: 1.5) {
             self.inputActivationView.alpha = 1
         }
-        
     }
     
     func configureMapView(){
-//        view.backgroundColor = .none
         
         view.addSubview(mapView)
     
@@ -120,51 +129,43 @@ class MainVC: UIViewController {
         print("DEBUG: Configuring MainVC BlackUI.")
         
         if on {
-            let messageLabel : UILabel = {
-                let label = UILabel()
-                label.text = " Please login in to use the app. "
-                label.textColor = .init(white: 1, alpha: 0.8)
-                label.font = UIFont.systemFont(ofSize: 18)
-                label.textAlignment = .center
-                label.numberOfLines = 0
-                return label
-            }()
-            let logInButton: AuthButton = {
-                let button = AuthButton(type: .system)
-                button.setTitle("Login", for: .normal)
-                button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 20)
-                button.addTarget(self, action: #selector(checkIfUserIsLoggedIn), for: .touchUpInside)
-                return button
-            }()
-            
-            let blackView: UIView = {
-                let view = UIView()
-                view.backgroundColor = .black
-                view.addSubview(messageLabel)
-                view.addSubview(logInButton)
-                messageLabel.centerY(inView: view)
-                messageLabel.centerX(inView: view)
-                logInButton.anchor(top: messageLabel.bottomAnchor, paddingTop: 15, width: 200, height: 50)
-                logInButton.centerX(inView: view)
-                view.accessibilityIdentifier = "blackView"
-                return view
-            }()
 
+            let blackView = LoginMessageView()
+            blackView.delegate = self
             view.addSubview(blackView)
             blackView.frame = view.frame
         }
         
     }
     
+    func configureLocationInputView(){
+        locationInputView.delegate = self
+        view.addSubview(locationInputView)
+        locationInputView.anchor(top: view.topAnchor, left: view.leftAnchor, right: view.rightAnchor, height: locationInputViewHeight)
+        locationInputView.alpha = 0
+        UIView.animate(withDuration: 0.5, animations: {
+            self.locationInputView.alpha = 1
+        }) { _ in
+            UIView.animate(withDuration: 0.3) {
+                self.tableView.frame.origin.y = self.locationInputViewHeight
+            }
+            
+        }
+    }
     
-    // MARK: - Navigation
-    /*
-     // In a storyboard-based application, you will often want to do a little preparation before navigation
-     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-     // Get the new view controller using segue.destination.
-     // Pass the selected object to the new view controller.
-     }
-     */
+    func configureTableView(){
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.register(LocationCell.self, forCellReuseIdentifier: reuseIdentifier)
+        
+        
+        tableView.rowHeight = 60
+        let height = view.frame.height - locationInputViewHeight
+        tableView.frame = CGRect(x: 0, y: view.frame.height , width: view.frame.width, height: height)
+        //removes the lines after the last row
+        tableView.tableFooterView = UIView()
+        view.addSubview(tableView)
+    }
     
 }
 
@@ -195,9 +196,70 @@ extension MainVC: CLLocationManagerDelegate{
     // to run send the second request righ away
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         
-//        if status == .authorizedWhenInUse {
+        if status == .authorizedWhenInUse {
             enableLocationServices()
-//        }
+        }
         
     }
+}
+
+//MARK: - UITableViewDelegate, UITableViewDataSource
+extension MainVC: UITableViewDelegate, UITableViewDataSource{
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return section == 0 ? "Seved address" : "Nearby"
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return section == 0 ? 2 : 5
+    }
+    func numberOfSections(in tableView: UITableView) -> Int {
+        2
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath) as! LocationCell
+        
+        return cell
+    }
+    
+}
+
+//MARK: - Protocols
+
+extension MainVC: LocationInputViewDelegate {
+    func dismissLocationInputView() {
+        
+        UIView.animate(withDuration: 0.3, animations: {
+            self.locationInputView.alpha = 0
+     
+            self.tableView.frame.origin.y = self.view.frame.height
+        }) { _ in
+            self.locationInputView.removeFromSuperview()
+        }
+  
+        UIView.animate(withDuration: 0.4, animations: {
+            self.inputActivationView.alpha = 1
+        })
+        
+    }
+}
+
+extension MainVC:LoginMessageViewDelegate {
+    func loginButtonAction() {
+        checkIfUserIsLoggedIn()
+    }
+}
+
+
+extension MainVC: LocationInputActivationViewDelegate {
+
+    func presentLocationInputView() {
+        UIView.animate(withDuration: 0.2) {
+            self.inputActivationView.alpha = 0
+        }
+        configureLocationInputView()
+    }
+    
+    
 }
