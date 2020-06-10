@@ -125,7 +125,7 @@ class SignupVC: UIViewController {
             
             let values = ["email" : email,
                           "fullname" : fullName,
-                          "accounttype" : accountType] as [String : Any]
+                          "accountType" : accountType] as [String : Any]
             Database.database().reference().child("users").child(uid).updateChildValues(values) { (error, ref) in
                 if let err = err {
                     print("DEBUG: Error registerig user data in users database: \(err.localizedDescription)")

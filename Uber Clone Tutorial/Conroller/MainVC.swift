@@ -26,6 +26,12 @@ class MainVC: UIViewController {
     private let locationInputView = LocationInputView()
     private let tableView = UITableView()
     
+    private var user : User? {
+        didSet {
+            locationInputView.user  = user?
+        }
+    }
+    
     private final let locationInputViewHeight : CGFloat = 200
     // MARK: -  Lifecycle
     
@@ -37,10 +43,14 @@ class MainVC: UIViewController {
         // defined in extension below
         enableLocationServices()
         
+        fetchUserData()
         
         
         // Do any additional setup after loading the view.
     }
+    
+    
+    
     
     override func viewWillAppear(_ animated: Bool) {
         navigationController?.setNavigationBarHidden(true, animated: animated)
@@ -52,13 +62,22 @@ class MainVC: UIViewController {
     
     // MARK: - API
     
+    func fetchUserData(){
+        
+        Service.shared.fetchUserData(completion: { user in
+            self.user = user
+            
+        })
+    }
+    
+    
+    
     @objc func checkIfUserIsLoggedIn() {
         if Auth.auth().currentUser?.uid == nil {
             print("DEBUG: User is not logged in")
             configureBlackView(status: true)
             DispatchQueue.main.async {
                 self.present(LoginVC(), animated: true, completion: nil)
-                
             }
             
         } else {
