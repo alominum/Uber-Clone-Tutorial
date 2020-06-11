@@ -23,6 +23,8 @@
 		54E5ABD4249026E90098F2DD /* LocationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54E5ABD3249026E90098F2DD /* LocationCell.swift */; };
 		54E5ABD6249066860098F2DD /* Service.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54E5ABD5249066860098F2DD /* Service.swift */; };
 		54E5ABD824912A7A0098F2DD /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54E5ABD724912A7A0098F2DD /* User.swift */; };
+		54E5ABDA249182290098F2DD /* LocaionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54E5ABD9249182290098F2DD /* LocaionHandler.swift */; };
+		54E5ABDC24926BEB0098F2DD /* DriverAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54E5ABDB24926BEA0098F2DD /* DriverAnnotation.swift */; };
 		88038EA486C68CA598535169 /* Pods_Uber_Clone_Tutorial.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24B0CBAF232313E0B250BC20 /* Pods_Uber_Clone_Tutorial.framework */; };
 /* End PBXBuildFile section */
 
@@ -46,6 +48,8 @@
 		54E5ABD3249026E90098F2DD /* LocationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationCell.swift; sourceTree = "<group>"; };
 		54E5ABD5249066860098F2DD /* Service.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Service.swift; sourceTree = "<group>"; };
 		54E5ABD724912A7A0098F2DD /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		54E5ABD9249182290098F2DD /* LocaionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocaionHandler.swift; sourceTree = "<group>"; };
+		54E5ABDB24926BEA0098F2DD /* DriverAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriverAnnotation.swift; sourceTree = "<group>"; };
 		8EFFF8E5E93414285075326C /* Pods-Uber Clone Tutorial.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Uber Clone Tutorial.debug.xcconfig"; path = "Target Support Files/Pods-Uber Clone Tutorial/Pods-Uber Clone Tutorial.debug.xcconfig"; sourceTree = "<group>"; };
 		D0234CC6E5B869448CA9939E /* Pods-Uber Clone Tutorial.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Uber Clone Tutorial.release.xcconfig"; path = "Target Support Files/Pods-Uber Clone Tutorial/Pods-Uber Clone Tutorial.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -123,6 +127,7 @@
 			isa = PBXGroup;
 			children = (
 				549F59A2246AFB9F00C71FA0 /* Extensions.swift */,
+				54E5ABD9249182290098F2DD /* LocaionHandler.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -149,6 +154,7 @@
 			isa = PBXGroup;
 			children = (
 				54E5ABD724912A7A0098F2DD /* User.swift */,
+				54E5ABDB24926BEA0098F2DD /* DriverAnnotation.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -280,6 +286,8 @@
 				549F59A1246AF36500C71FA0 /* LoginVC.swift in Sources */,
 				549F59A5246B677100C71FA0 /* SignupVC.swift in Sources */,
 				548CA570248ECD2100494E5E /* LocaionInputActivationView.swift in Sources */,
+				54E5ABDC24926BEB0098F2DD /* DriverAnnotation.swift in Sources */,
+				54E5ABDA249182290098F2DD /* LocaionHandler.swift in Sources */,
 				548CA56E248ECC9B00494E5E /* AuthButton.swift in Sources */,
 				54E5ABD2248FCF8D0098F2DD /* LocationInputView.swift in Sources */,
 				54E5ABD6249066860098F2DD /* Service.swift in Sources */,

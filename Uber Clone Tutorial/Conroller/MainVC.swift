@@ -11,16 +11,15 @@ import Firebase
 import MapKit
 
 private let reuseIdentifier = "LocationCell"
+private let driverAnnotationIdentifier = "DriverAnnotation"
+
 
 class MainVC: UIViewController {
-
-    
-    
     
     // MARK: - Properties
     
     private let mapView = MKMapView()
-    private let locationManager = CLLocationManager()
+    private let locationManager = LocaionHandler.shared.locationManager
     
     private let inputActivationView = LocationInputActivationView()
     private let locationInputView = LocationInputView()
@@ -28,7 +27,7 @@ class MainVC: UIViewController {
     
     private var user : User? {
         didSet {
-            locationInputView.user  = user?
+            locationInputView.user  = user
         }
     }
     
@@ -45,6 +44,10 @@ class MainVC: UIViewController {
         
         fetchUserData()
         
+        fetchDriversInRange()
+        
+         updateMovingDriversPosition()
+       // signOut()
         
         // Do any additional setup after loading the view.
     }
@@ -53,6 +56,7 @@ class MainVC: UIViewController {
     
     
     override func viewWillAppear(_ animated: Bool) {
+        
         navigationController?.setNavigationBarHidden(true, animated: animated)
     }
     
@@ -62,9 +66,46 @@ class MainVC: UIViewController {
     
     // MARK: - API
     
+    func fetchDriversInRange(){
+        guard let location = locationManager?.location else { return }
+        Service.shared.fetchDrivers(location: location, completion: {driver in
+            guard let coodinate = driver.location?.coordinate else { return }
+            let annotation = DriverAnnotation(uid: driver.uid, coordinate: coodinate)
+            //add driver location to he map
+
+
+                self.mapView.addAnnotation(annotation)
+
+            
+        })
+    }
+    
+    func updateMovingDriversPosition(){
+        guard let location = locationManager?.location else { return }
+        Service.shared.fetchMovingDrivers(location: location, completion: {driver in
+            guard let coodinate = driver.location?.coordinate else { return }
+            _ = DriverAnnotation(uid: driver.uid, coordinate: coodinate)
+            //add driver location to he map
+            
+            self.mapView.annotations.contains { (annotation) -> Bool in
+                guard let driverAnnotation = annotation as? DriverAnnotation else { return false }
+
+                if driverAnnotation.uid == driver.uid {
+                    //                        update possision here
+                    driverAnnotation.updateDriverPosition(withCoordinate: coodinate)
+                
+                }
+                return false
+            }
+            
+            
+        })
+    }
+    
+    
     func fetchUserData(){
-        
-        Service.shared.fetchUserData(completion: { user in
+        guard let currenUid = Auth.auth().currentUser?.uid else { return }
+        Service.shared.fetchUserData(uid: currenUid, completion: { user in
             self.user = user
             
         })
@@ -99,7 +140,7 @@ class MainVC: UIViewController {
     }
     // MARK: - Helper Functions
     
-    
+
     
     func configureUI(){
         print("DEBUG: Configuring MainVC UI.")
@@ -113,7 +154,7 @@ class MainVC: UIViewController {
     
     
     func configureInputActiveView(){
-        
+
         view.addSubview(inputActivationView)
         inputActivationView.centerX(inView: view)
         inputActivationView.setDimensions(width: view.frame.width - 32, height: 50)
@@ -125,17 +166,7 @@ class MainVC: UIViewController {
         }
     }
     
-    func configureMapView(){
-        
-        view.addSubview(mapView)
-    
-        mapView.frame = view.frame
-        
-        mapView.showsUserLocation = true
-        mapView.userTrackingMode = .follow
-        
-        
-    }
+
     
     func configureBlackView(status on:Bool = false){
     
@@ -188,41 +219,33 @@ class MainVC: UIViewController {
     
 }
 
-//MARK: - Location services extension
+//MARK: - extension: Location services extension
 
-extension MainVC: CLLocationManagerDelegate{
+extension MainVC{
     
     func enableLocationServices(){
-        locationManager.delegate = self
         switch CLLocationManager.authorizationStatus() {
         case .notDetermined:
             //asks for access to location (when in use)
-            locationManager.requestWhenInUseAuthorization()
+            locationManager?.requestWhenInUseAuthorization()
         case .restricted, .denied:
             break
         case .authorizedAlways:
             //updates the location and set the accuracy to best
-            locationManager.startUpdatingLocation()
-            locationManager.desiredAccuracy = kCLLocationAccuracyBest
+            locationManager?.startUpdatingLocation()
+            locationManager?.desiredAccuracy = kCLLocationAccuracyBest
         case .authorizedWhenInUse:
             //asks for access to location (always)
-            locationManager.requestAlwaysAuthorization()
+            locationManager?.requestAlwaysAuthorization()
         @unknown default:
             break
         }
     }
     
-    // to run send the second request righ away
-    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        
-        if status == .authorizedWhenInUse {
-            enableLocationServices()
-        }
-        
-    }
+
 }
 
-//MARK: - UITableViewDelegate, UITableViewDataSource
+//MARK: - extension: UITableViewDelegate, UITableViewDataSource
 extension MainVC: UITableViewDelegate, UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -244,7 +267,32 @@ extension MainVC: UITableViewDelegate, UITableViewDataSource{
     
 }
 
-//MARK: - Protocols
+//MARK: - extension: MapView
+
+extension MainVC : MKMapViewDelegate {
+    func configureMapView(){
+        
+        view.addSubview(mapView)
+        mapView.delegate = self
+        mapView.frame = view.frame
+        
+        mapView.showsUserLocation = true
+        mapView.userTrackingMode = .follow
+    }
+    
+    // Defines custome anooationView for drivers
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        if let annotation = annotation as? DriverAnnotation {
+            let view = MKAnnotationView(annotation: annotation, reuseIdentifier: driverAnnotationIdentifier)
+            view.image = #imageLiteral(resourceName: "chevron-sign-to-right")
+            return view
+        }
+        return nil
+    }
+}
+
+
+//MARK: - extension: Local Protocols
 
 extension MainVC: LocationInputViewDelegate {
     func dismissLocationInputView() {

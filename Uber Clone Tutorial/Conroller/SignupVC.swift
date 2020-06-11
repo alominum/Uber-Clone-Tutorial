@@ -8,6 +8,7 @@
 
 import UIKit
 import Firebase
+import GeoFire
 
 class SignupVC: UIViewController {
     
@@ -21,37 +22,38 @@ class SignupVC: UIViewController {
         return label
     }()
     
+    private var location = LocaionHandler.shared.locationManager.location
     private let emailTextField : UITextField = {
         let view = UITextField().textField(withPlaceHolder: "Email", isSecuredTextEntry: false)
         return view
     }()
-
-        private lazy var emailContainerView : UIView = {
-            let view = UIView().inputContainerView(image: #imageLiteral(resourceName: "ic_mail_outline_white_2x"), textField: emailTextField)
-            view.heightAnchor.constraint(equalToConstant: 50).isActive = true
-            return view
-        }()
+    
+    private lazy var emailContainerView : UIView = {
+        let view = UIView().inputContainerView(image: #imageLiteral(resourceName: "ic_mail_outline_white_2x"), textField: emailTextField)
+        view.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        return view
+    }()
     
     private let fullNameTextField : UITextField = {
         let view = UITextField().textField(withPlaceHolder: "Full Name", isSecuredTextEntry: false)
         return view
     }()
     
-       
+    
     private lazy var fullnameContainerView : UIView = {
         let view = UIView().inputContainerView(image: #imageLiteral(resourceName: "ic_person_outline_white_2x"), textField: fullNameTextField)
-                view.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        view.heightAnchor.constraint(equalToConstant: 50).isActive = true
         return view
     }()
-
     
-
+    
+    
     private let passwordTextField : UITextField = {
         let view = UITextField().textField(withPlaceHolder: "Password", isSecuredTextEntry: true)
         return view
     }()
     
- 
+    
     private lazy var passwordContainerView : UIView = {
         let view = UIView().inputContainerView(image: #imageLiteral(resourceName: "ic_lock_outline_white_2x"), textField: passwordTextField)
         view.heightAnchor.constraint(equalToConstant: 50).isActive = true
@@ -65,7 +67,7 @@ class SignupVC: UIViewController {
         sc.selectedSegmentIndex = 0
         return sc
     }()
-
+    
     private lazy var accountTypeContainerView : UIView = {
         let view = UIView().inputContainerView(image: #imageLiteral(resourceName: "ic_account_box_white_2x"), segmentedControll: accountTypeSC)
         view.heightAnchor.constraint(equalToConstant: 85).isActive = true
@@ -93,14 +95,14 @@ class SignupVC: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-         configureUI()
+        configureUI()
         configureUI()
     }
     
-//    override func viewDidAppear(_ animated: Bool) {
-//        configureUI()
-//    }
-//    
+    //    override func viewDidAppear(_ animated: Bool) {
+    //        configureUI()
+    //    }
+    //
     
     
     // MARK: - Selectors
@@ -113,7 +115,8 @@ class SignupVC: UIViewController {
         guard let email = emailTextField.text else { return }
         guard let password = passwordTextField.text else { return }
         guard let fullName = fullNameTextField.text else { return }
-        let accountType = accountTypeSC.selectedSegmentIndex
+        let accountTypeIndex = accountTypeSC.selectedSegmentIndex
+        let geofire = GeoFire(firebaseRef: REF_DRIVER_LOCATIONS)
         
         Auth.auth().createUser(withEmail: email, password: password) { (result, err) in
             if let err = err {
@@ -122,11 +125,19 @@ class SignupVC: UIViewController {
             }
             
             guard let uid = result?.user.uid else { return }
+            if accountTypeIndex == 1 {
+                if let location = self.location {
+                    geofire.setLocation(location, forKey: uid) { err in
+                        
+                    }
+                }
+            }
             
             let values = ["email" : email,
                           "fullname" : fullName,
-                          "accountType" : accountType] as [String : Any]
-            Database.database().reference().child("users").child(uid).updateChildValues(values) { (error, ref) in
+                          "accountType" : accountTypeIndex] as [String : Any]
+            
+            REF_USERS.child(uid).updateChildValues(values) { (error, ref) in
                 if let err = err {
                     print("DEBUG: Error registerig user data in users database: \(err.localizedDescription)")
                     return
@@ -141,7 +152,7 @@ class SignupVC: UIViewController {
                 
                 // Goes to root VC
                 self.view.window?.rootViewController?.dismiss(animated: true, completion: nil)
-
+                
                 
             }
             
@@ -167,7 +178,7 @@ class SignupVC: UIViewController {
         
         // Deine and add Stack
         let stack = UIStackView(arrangedSubviews: [emailContainerView,fullnameContainerView,passwordContainerView,accountTypeContainerView,signupButton])
-//        let stack = UIStackView(arrangedSubviews: [emailContainerView])
+        //        let stack = UIStackView(arrangedSubviews: [emailContainerView])
         stack.axis = .vertical
         stack.distribution = .fillProportionally
         stack.spacing = 16
@@ -183,8 +194,8 @@ class SignupVC: UIViewController {
     }
     
     func configureNavBar(){
-              navigationController?.navigationBar.isHidden = true
-         navigationController?.navigationBar.barStyle = .black
+        navigationController?.navigationBar.isHidden = true
+        navigationController?.navigationBar.barStyle = .black
     }
     
 }
