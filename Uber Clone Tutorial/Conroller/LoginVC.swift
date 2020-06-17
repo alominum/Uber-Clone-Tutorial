@@ -102,7 +102,7 @@ class LoginVC: UIViewController {
             
             guard let vc = UIApplication.shared.windows.first!.rootViewController?.children.first as? MainVC else { return }
             
-            vc.configureUI()
+            vc.configure()
             
             // Goes to root VC
             self.dismiss(animated: true, completion: nil)

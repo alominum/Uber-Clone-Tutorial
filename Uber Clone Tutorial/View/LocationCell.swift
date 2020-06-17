@@ -7,22 +7,29 @@
 //
 
 import UIKit
+import MapKit
 
 class LocationCell: UITableViewCell {
     
     //MARK: - Properties
-    private let titleLabel : UILabel = {
+    
+    var placemark : MKPlacemark? {
+        didSet{
+            titleLabel.text = placemark?.name
+            addressLabel.text = placemark?.address
+        }
+    }
+    
+     private let titleLabel : UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14)
-        label.text = "Home"
         return label
     }()
 
-    private let addressLabel : UILabel = {
+     private let addressLabel : UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14)
         label.textColor = .lightGray
-        label.text = "129 Flamingo drive, Beaconsfield"
         return label
     }()
     

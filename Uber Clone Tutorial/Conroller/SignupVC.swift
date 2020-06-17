@@ -96,13 +96,10 @@ class SignupVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
-        configureUI()
+        
     }
     
-    //    override func viewDidAppear(_ animated: Bool) {
-    //        configureUI()
-    //    }
-    //
+
     
     
     // MARK: - Selectors
@@ -148,7 +145,7 @@ class SignupVC: UIViewController {
                 
                 // Configure UI in the mainVC
                 guard let vc = UIApplication.shared.windows.first?.rootViewController?.children.first as? MainVC else { return }
-                vc.configureUI()
+                vc.configure()
                 
                 // Goes to root VC
                 self.view.window?.rootViewController?.dismiss(animated: true, completion: nil)

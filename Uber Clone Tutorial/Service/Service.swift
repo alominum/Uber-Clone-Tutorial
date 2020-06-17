@@ -32,28 +32,41 @@ struct Service {
     func fetchDrivers(location: CLLocation, completion: @escaping(User) -> Void) {
         let geofire = GeoFire(firebaseRef: REF_DRIVER_LOCATIONS)
         
-//        REF_DRIVER_LOCATIONS.observe(.value) { (snapShot) in
+        //        REF_DRIVER_LOCATIONS.observe(.value) { (snapShot) in
         geofire.query(at: location, withRadius: 5).observe(.keyEntered, with: { (uid, location) in
-                self.fetchUserData(uid: uid) { (user) in
-                    var driver = user
-                    driver.location = location
-                    completion(driver)
-                }
-            })
-//        }
-
+            self.fetchUserData(uid: uid) { (user) in
+                var driver = user
+                driver.location = location
+                completion(driver)
+            }
+        })
+        //        }
+        
     }
     
-        func fetchMovingDrivers(location: CLLocation, completion: @escaping(User) -> Void) {
-            let geofire = GeoFire(firebaseRef: REF_DRIVER_LOCATIONS)
-            
-            geofire.query(at: location, withRadius: 5).observe(.keyMoved, with: { (uid, location) in
-                    self.fetchUserData(uid: uid) { (user) in
-                        var driver = user
-                        driver.location = location
-                        completion(driver)
-                    }
-                })
-
-        }
+    func fetchMovingDrivers(location: CLLocation, completion: @escaping(User) -> Void) {
+        let geofire = GeoFire(firebaseRef: REF_DRIVER_LOCATIONS)
+        
+        geofire.query(at: location, withRadius: 5).observe(.keyMoved, with: { (uid, location) in
+            self.fetchUserData(uid: uid) { (user) in
+                var driver = user
+                driver.location = location
+                completion(driver)
+            }
+        })
+        
+    }
+    
+    func fetchExitedDrivers(location: CLLocation, completion: @escaping(User) -> Void) {
+        let geofire = GeoFire(firebaseRef: REF_DRIVER_LOCATIONS)
+        
+        geofire.query(at: location, withRadius: 5).observe(.keyExited, with: { (uid, location) in
+            self.fetchUserData(uid: uid) { (user) in
+                var driver = user
+                driver.location = location
+                completion(driver)
+            }
+        })
+        
+    }
 }

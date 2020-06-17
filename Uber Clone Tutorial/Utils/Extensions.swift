@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import MapKit
 
 //MARK: - UIColor
 
@@ -160,4 +161,33 @@ extension UIApplication {
         return windows.first(where: { $0.isKeyWindow })
     }
 
+}
+
+//MARK: - MKPlacemark
+extension MKPlacemark {
+    var address : String? {
+        guard let subThoroughfare = subThoroughfare else { return nil }
+        guard let thoroughfare = thoroughfare else { return nil }
+        guard let locality = locality else { return nil }
+        guard let adminArea = administrativeArea else { return nil }
+        return "\(subThoroughfare) \(thoroughfare), \(locality), \(adminArea)"
+    }
+}
+
+//MARK: - MKMapView
+
+extension MKMapView {
+    func zoomToFit(annotations: [MKAnnotation],top: CGFloat,bottom: CGFloat){
+        var zoomRect = MKMapRect.null
+        
+        annotations.forEach { (annotation) in
+            let annotationpoint = MKMapPoint(annotation.coordinate)
+            let pointRect = MKMapRect(x: annotationpoint.x, y: annotationpoint.y, width: 0.01, height: 0.01)
+            // unions the zoomRect with the new one
+            zoomRect = zoomRect.union(pointRect)
+        }
+        // defines the rect we need to zoom in on the screen
+        let insets = UIEdgeInsets(top: top, left: 75, bottom: bottom, right: 75)
+        setVisibleMapRect(zoomRect, edgePadding: insets, animated: true)
+    }
 }
