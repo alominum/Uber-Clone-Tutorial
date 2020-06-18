@@ -9,8 +9,8 @@
 import UIKit
 import MapKit
 
-protocol RideActionViewDelegate {
-    func handleConfirmUberXButton()
+protocol RideActionViewDelegate: class {
+    func uploadTrip(_ view : RideActionView)
 }
 
 class RideActionView: UIView {
@@ -23,7 +23,7 @@ class RideActionView: UIView {
             addressLabel.text = destination?.address
         }
     }
-    var delegate: RideActionViewDelegate?
+    weak var delegate: RideActionViewDelegate?
     
     private let titleLable : UILabel = {
         let label = UILabel()
@@ -126,6 +126,6 @@ class RideActionView: UIView {
     
     //MARK: - Selectors
     @objc func actionButtonPressed(){
-        delegate?.handleConfirmUberXButton()
+        delegate?.uploadTrip(self)
     }
 }

@@ -50,7 +50,13 @@ class MainVC: UIViewController {
     }()
     
     private var user : User? {
-        didSet {  locationInputView.user  = user }
+        didSet {
+            locationInputView.user  = user
+            if user?.accountType == .passenger {
+                fetchDriversInRange()
+                configureInputActivationView()
+            }
+        }
     }
     
     
@@ -65,7 +71,7 @@ class MainVC: UIViewController {
         enableLocationServices()
         
         
-        //   signOut()
+  //      signOut()
         
         // Do any additional setup after loading the view.
     }
@@ -196,7 +202,6 @@ class MainVC: UIViewController {
     func configure(){
         configureUI()
         fetchUserData()
-        fetchDriversInRange()
         updateMovingDriversPosition()
         updateExitedDriversPosition()
         
@@ -209,7 +214,7 @@ class MainVC: UIViewController {
         
         configureMapView()
         configureActionButton()
-        configureInputActionView()
+       
         configureTableView()
         configureRideActionView()
     }
@@ -233,27 +238,27 @@ class MainVC: UIViewController {
             rideActionView.destination = placemark
         }
         
-            UIView.animate(withDuration: 0.3) {
-                self.rideActionView.frame.origin.y = yOrigin
-            }
+        UIView.animate(withDuration: 0.3) {
+            self.rideActionView.frame.origin.y = yOrigin
+        }
     }
     
     
-    func configureInputActionView(){
-        
+    func configureInputActivationView(){
         view.addSubview(inputActivationView)
         inputActivationView.centerX(inView: view)
         inputActivationView.setDimensions(width: view.frame.width - 64, height: 50)
         inputActivationView.anchor(top: actionButton.bottomAnchor, paddingTop: 20)
         inputActivationView.delegate = self
         inputActivationView.alpha = 0
+        
         UIView.animate(withDuration: 1.5) {
             self.inputActivationView.alpha = 1
-            self.actionButton.alpha = 1
+            //self.actionButton.alpha = 1
         }
     }
     
-
+    
     
     func configureBlackView(status on:Bool = false){
         
@@ -365,11 +370,11 @@ extension MainVC: UITableViewDelegate, UITableViewDataSource{
         
         dismissInputActionView { _ in
             let annotation = MKPointAnnotation()
-        
+            
             annotation.coordinate = selectedPlacemark.coordinate
             self.mapView.addAnnotation(annotation)
             self.mapView.selectAnnotation(annotation, animated: true)
-        
+            
             
             let annotations = self.mapView.annotations.filter ({ !$0.isKind(of: DriverAnnotation.self)})
             
@@ -379,7 +384,7 @@ extension MainVC: UITableViewDelegate, UITableViewDataSource{
             
         }
         
-
+        
     }
 }
 
@@ -486,7 +491,7 @@ private extension MainVC{
             self.route = resp.routes[0]
             guard let polyline = self.route?.polyline else { return }
             self.mapView.addOverlay(polyline)
-  
+            
         }
         
     }
@@ -547,7 +552,19 @@ extension MainVC: LocationInputActivationViewDelegate {
 }
 
 extension MainVC : RideActionViewDelegate {
-    func handleConfirmUberXButton() {
+    
+    func uploadTrip(_ view : RideActionView) {
+        guard let pickupCoordinates = locationManager?.location?.coordinate else { return }
+        guard let destinationCoordinates = view.destination?.coordinate else { return }
+        Service.shared.uploadTrip(pickupCoordinates, destinationCoordinates) { (error, ref) in
+            if let err = error {
+                print("DEBUG: Error uploading trip: \(err.localizedDescription)")
+                return
+            }
+            
+            print("DEBUG: Did upload thet trip")
+        }
         
+        //    Service.shared.uploadTrip(pickupCoordinates, destinationCoordinates, completion: completion)
     }
 }
