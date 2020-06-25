@@ -6,6 +6,8 @@
 //  Copyright © 2020 Azrieli. All rights reserved.
 //
 
+// CHECK this
+
 import CoreLocation
 
 enum TripState: Int {
