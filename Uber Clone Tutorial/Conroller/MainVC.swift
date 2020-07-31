@@ -55,10 +55,35 @@ class MainVC: UIViewController {
             if user?.accountType == .passenger {
                 fetchDriversInRange()
                 configureInputActivationView()
+                observeCurrentTrip()
+            } else {
+                observeTrips()
             }
         }
     }
     
+
+    private var trip : Trip? {
+        didSet {
+            guard let user = user else { return }
+            if user.accountType == .driver {
+                
+                guard let trip = trip else {  return }
+                let controller = PickupVC(trip: trip)
+                controller.delegate = self
+                self.present(controller, animated: true) {
+                    
+                }
+            } else {
+                print("DEBUG: USER side action view.")
+                
+                
+                
+                
+            }
+        }
+        
+    }
     
     // MARK: -  Lifecycle
     
@@ -112,6 +137,27 @@ class MainVC: UIViewController {
     }
     
     // MARK: - API
+    
+    func observeCurrentTrip(){
+        Service.shared.observeCurrentTrip(completion: { trip in
+            self.trip = trip
+            
+            if trip.state == .accepted {
+                self.shouldPresentLoadingView(false)
+                self.animateRideActionView(shouldShow: true)
+            }
+        })
+    }
+    
+    
+    func observeTrips(){
+        Service.shared.fetchTrip { trip in
+            self.trip = trip
+            
+        }
+    }
+    
+    
     
     func fetchDriversInRange(){
         guard let location = locationManager?.location else { return }
@@ -556,15 +602,36 @@ extension MainVC : RideActionViewDelegate {
     func uploadTrip(_ view : RideActionView) {
         guard let pickupCoordinates = locationManager?.location?.coordinate else { return }
         guard let destinationCoordinates = view.destination?.coordinate else { return }
+        
+        shouldPresentLoadingView(true,message: "Finding you a ride.")
+        
         Service.shared.uploadTrip(pickupCoordinates, destinationCoordinates) { (error, ref) in
             if let err = error {
                 print("DEBUG: Error uploading trip: \(err.localizedDescription)")
                 return
             }
             
-            print("DEBUG: Did upload thet trip")
+            UIView.animate(withDuration: 0.3) {
+                self.rideActionView.frame.origin.y = self.view.frame.height
+            }
+            
         }
         
-        //    Service.shared.uploadTrip(pickupCoordinates, destinationCoordinates, completion: completion)
     }
+}
+
+extension MainVC: PickupVCDelegate {
+    
+    
+    
+    func didAcceptTrip(_ trip: Trip) {
+        self.trip = trip
+        
+        
+        
+        self.dismiss(animated: true, completion: nil)
+    }
+    
+    
+    
 }

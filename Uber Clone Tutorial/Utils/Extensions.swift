@@ -104,6 +104,12 @@ extension UIView {
         translatesAutoresizingMaskIntoConstraints = false
         centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: paddingX).isActive = true
     }
+
+    func centerY(inView view: UIView, paddingY: CGFloat = 0){
+        translatesAutoresizingMaskIntoConstraints = false
+        centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: paddingY).isActive = true
+
+    }
     
     func centerY(inView view: UIView, leftAnchor: NSLayoutXAxisAnchor? = nil, paddingLeft: CGFloat = 0 ,paddingY: CGFloat = 0){
         translatesAutoresizingMaskIntoConstraints = false
@@ -190,4 +196,56 @@ extension MKMapView {
         let insets = UIEdgeInsets(top: top, left: 75, bottom: bottom, right: 75)
         setVisibleMapRect(zoomRect, edgePadding: insets, animated: true)
     }
+}
+
+//MARK: -  UIViewController
+
+extension UIViewController {
+    func shouldPresentLoadingView(_ present: Bool, message : String? = nil){
+        if present {
+            let loadingView = UIView()
+            loadingView.frame = self.view.frame
+            loadingView.backgroundColor = .black
+            loadingView.alpha = 0
+            loadingView.tag = 1
+            
+            let indicator = UIActivityIndicatorView()
+            indicator.style = .large
+            indicator.color = .white
+            indicator.center = loadingView.center
+            
+            let label = UILabel()
+            label.text = message
+            label.font = UIFont.systemFont(ofSize: 20)
+            label.textColor = .white
+            label.alpha = 0.87
+            label.textAlignment = .center
+            
+            loadingView.addSubview(indicator)
+            loadingView.addSubview(label)
+            self.view.addSubview(loadingView)
+
+            
+            label.centerX(inView: self.view)
+            label.anchor(top: indicator.bottomAnchor, paddingTop: 32)
+            
+            indicator.startAnimating()
+            
+            UIView.animate(withDuration: 0.3) {
+                loadingView.alpha = 0.7
+            }
+        } else {
+            view.subviews.forEach { (subView) in
+                if subView.tag == 1 {
+                    UIView.animate(withDuration: 0.3, animations: {
+                        subView.alpha = 0
+                    }) { _ in
+                        subView.removeFromSuperview()
+                    }
+
+                }
+            }
+        }
+    }
+    
 }

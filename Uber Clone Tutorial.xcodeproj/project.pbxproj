@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		540D0088249A756100C2E25E /* RideActionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 540D0087249A756100C2E25E /* RideActionView.swift */; };
 		540D008A249BD8BD00C2E25E /* Trip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 540D0089249BD8BD00C2E25E /* Trip.swift */; };
+		54588B3224D0827F007A3FD6 /* PickupVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54588B3124D0827F007A3FD6 /* PickupVC.swift */; };
 		54700D7C246C8E550022CA9E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 54700D7B246C8E550022CA9E /* GoogleService-Info.plist */; };
 		54700D7E246F1A050022CA9E /* MainVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54700D7D246F1A050022CA9E /* MainVC.swift */; };
 		548CA56E248ECC9B00494E5E /* AuthButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 548CA56D248ECC9B00494E5E /* AuthButton.swift */; };
@@ -34,6 +35,7 @@
 		24B0CBAF232313E0B250BC20 /* Pods_Uber_Clone_Tutorial.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Uber_Clone_Tutorial.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		540D0087249A756100C2E25E /* RideActionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideActionView.swift; sourceTree = "<group>"; };
 		540D0089249BD8BD00C2E25E /* Trip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Trip.swift; sourceTree = "<group>"; };
+		54588B3124D0827F007A3FD6 /* PickupVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickupVC.swift; sourceTree = "<group>"; };
 		54700D7B246C8E550022CA9E /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		54700D7D246F1A050022CA9E /* MainVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainVC.swift; sourceTree = "<group>"; };
 		548CA56D248ECC9B00494E5E /* AuthButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthButton.swift; sourceTree = "<group>"; };
@@ -150,6 +152,7 @@
 			children = (
 				549F59A0246AF36500C71FA0 /* LoginVC.swift */,
 				549F59A4246B677100C71FA0 /* SignupVC.swift */,
+				54588B3124D0827F007A3FD6 /* PickupVC.swift */,
 				54700D7D246F1A050022CA9E /* MainVC.swift */,
 			);
 			path = Conroller;
@@ -300,6 +303,7 @@
 				548CA572248ED6A800494E5E /* LoginMessageView.swift in Sources */,
 				54E5ABD4249026E90098F2DD /* LocationCell.swift in Sources */,
 				549F5988246AF0A300C71FA0 /* AppDelegate.swift in Sources */,
+				54588B3224D0827F007A3FD6 /* PickupVC.swift in Sources */,
 				540D0088249A756100C2E25E /* RideActionView.swift in Sources */,
 				549F598A246AF0A300C71FA0 /* SceneDelegate.swift in Sources */,
 				549F59A3246AFB9F00C71FA0 /* Extensions.swift in Sources */,
